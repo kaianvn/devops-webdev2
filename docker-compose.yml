@@ -1,0 +1,64 @@
+services: 
+  app:
+    image: node:alpine
+    volumes:
+      - .:/app
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER_1}:${POSTGRES_PASSWORD_1}@postgres1:5432/${POSTGRES_DB_1}
+    depends_on:
+      - redis
+      - postgres1
+      - postgres2
+      - postgres3
+
+  redis:
+    env_file:
+      - .env
+    image: redis:alpine
+    volumes:
+      - ./.data/redis:/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+
+  postgres1:
+    env_file:
+      - .env
+    image: postgres:alpine
+    volumes:
+      - ./.data/postgres1:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_1?err}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_1?err}
+      - POSTGRES_DB=${POSTGRES_DB_1?err}
+    ports:
+      - 5443:5432
+
+  postgres2:
+    env_file:
+      - .env
+    image: postgres:alpine
+    volumes:
+      - ./.data/postgres2:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_2?err}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_2?err}
+      - POSTGRES_DB=${POSTGRES_DB_2?err}
+    ports:
+      - 5444:5432
+
+  postgres3:
+    env_file:
+      - .env
+    image: postgres:alpine
+    volumes:
+      - ./.data/postgres3:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_3?err}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_3?err}
+      - POSTGRES_DB=${POSTGRES_DB_3?err}
+    ports:
+      - 5445:5432
